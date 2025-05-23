@@ -1,81 +1,187 @@
 # Job Tracker API
 
-A FastAPI-based backend for tracking job applications, interviews, and notes.
+A comprehensive FastAPI-based application for tracking job applications, interviews, and related activities. This application provides a robust backend API with features for user management, job tracking, and detailed logging.
 
 ## Features
 
-- User authentication with JWT tokens
-- CRUD operations for job applications
-- Notes for each job application
-- Secure password hashing
-- SQLite database (can be configured for PostgreSQL)
+- 🔐 **Authentication & Authorization**
+  - JWT-based authentication
+  - Role-based access control
+  - Secure password hashing
+  - Token-based session management
 
-## Setup
+- 📝 **Job Management**
+  - Create, read, update, and delete job applications
+  - Track application status
+  - Add notes and comments
+  - Search and filter capabilities
+  - Pagination support
 
-1. Create a virtual environment:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
+- 🔍 **Advanced Features**
+  - Database migrations with Alembic
+  - Connection pooling
+  - Request/response logging
+  - Health check endpoints
+  - GZip compression
+  - CORS support
+  - Input validation
+  - Error handling
 
-2. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+## Tech Stack
 
-3. Create a `.env` file in the root directory with the following content:
-```
-SECRET_KEY=your-secret-key-here
-DATABASE_URL=sqlite:///./job_tracker.db
-```
+- **Framework**: FastAPI
+- **Database**: SQLite (configurable for other databases)
+- **ORM**: SQLAlchemy
+- **Authentication**: JWT
+- **Migrations**: Alembic
 
-4. Run the application:
-```bash
-uvicorn backend.main:app --reload
-```
 
-The API will be available at `http://localhost:8000`
+## Prerequisites
 
-## API Documentation
+- Python 3.8+
+- pip (Python package manager)
+- virtualenv (recommended)
 
-Once the application is running, you can access:
-- Interactive API documentation (Swagger UI): `http://localhost:8000/docs`
-- Alternative API documentation (ReDoc): `http://localhost:8000/redoc`
+## Installation
+
+1. Clone the repository:
+  
+2. Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   # On Windows
+   .\venv\Scripts\activate
+   # On Unix or MacOS
+   source venv/bin/activate
+   ```
+
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Set up environment variables:
+   Create a `.env` file in the root directory with the following variables:
+   ```
+   DATABASE_URL=sqlite:///./job_tracker.db
+   SECRET_KEY=your-secret-key
+   ACCESS_TOKEN_EXPIRE_MINUTES=30
+   CORS_ORIGINS=["http://localhost:3000"]
+   ALLOWED_HOSTS=["localhost", "127.0.0.1"]
+   ```
+
+5. Initialize the database:
+   ```bash
+   # Create initial migration
+   alembic revision --autogenerate -m "Initial migration"
+   
+   # Apply migrations
+   alembic upgrade head
+   ```
+
+## Running the Application
+
+1. Start the development server:
+   ```bash
+   uvicorn backend.main:app --reload
+   ```
+
+2. Access the API documentation:
+   - Swagger UI: http://localhost:8000/docs
+   - ReDoc: http://localhost:8000/redoc
 
 ## API Endpoints
 
 ### Authentication
-- POST `/api/v1/token` - Get access token
-- POST `/api/v1/users/` - Create new user
+- `POST /api/v1/token` - Get access token
+- `POST /api/v1/users/` - Create new user
 
 ### Jobs
-- GET `/api/v1/jobs/` - List all jobs
-- POST `/api/v1/jobs/` - Create new job
-- GET `/api/v1/jobs/{job_id}` - Get job details
-- PUT `/api/v1/jobs/{job_id}` - Update job
-- DELETE `/api/v1/jobs/{job_id}` - Delete job
+- `POST /api/v1/jobs/` - Create new job application
+- `GET /api/v1/jobs/` - List all jobs (with filtering)
+- `GET /api/v1/jobs/{job_id}` - Get specific job
+- `PUT /api/v1/jobs/{job_id}` - Update job
+- `DELETE /api/v1/jobs/{job_id}` - Delete job
 
 ### Job Notes
-- POST `/api/v1/jobs/{job_id}/notes/` - Add note to job
-- GET `/api/v1/jobs/{job_id}/notes/` - List job notes
+- `POST /api/v1/jobs/{job_id}/notes/` - Add note to job
+- `GET /api/v1/jobs/{job_id}/notes/` - List job notes
 
-## Security
+### System
+- `GET /health` - Health check endpoint
+- `GET /` - API information
 
-- All endpoints except user creation and token generation require authentication
-- Passwords are hashed using bcrypt
-- JWT tokens are used for authentication
-- CORS is configured to allow cross-origin requests (configure appropriately for production)
+## Development
 
-## Database
-
-The application uses SQLite by default. To use PostgreSQL:
-
-1. Update the DATABASE_URL in .env:
+### Project Structure
 ```
-DATABASE_URL=postgresql://user:password@localhost/dbname
+job-tracker/
+├── backend/
+│   ├── alembic.ini
+│   ├── main.py
+│   ├── config.py
+│   ├── database.py
+│   ├── models.py
+│   ├── schemas.py
+│   ├── crud.py
+│   ├── auth.py
+│   ├── routes.py
+│   └── migrations/
+├── requirements.txt
+└── README.md
 ```
 
-2. Install psycopg2-binary:
+### Database Migrations
+
+To create a new migration:
 ```bash
-pip install psycopg2-binary
-``` 
+alembic revision --autogenerate -m "Description of changes"
+```
+
+To apply migrations:
+```bash
+alembic upgrade head
+```
+
+To rollback migrations:
+```bash
+alembic downgrade -1  # Rollback one migration
+```
+
+### Logging
+
+The application uses Python's built-in logging module with the following configuration:
+- Log level: INFO
+- Output: Both file (app.log) and console
+- Format: Timestamp - Logger Name - Level - Message
+
+## Security Features
+
+- Password hashing using bcrypt
+- JWT token-based authentication
+- CORS protection
+- Trusted host middleware
+- Input validation
+- SQL injection protection through SQLAlchemy
+- Secure session management
+
+## Error Handling
+
+The application includes comprehensive error handling:
+- Global exception handler
+- Validation error handler
+- Database error handling
+- Custom HTTP exceptions
+- Detailed error logging
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details. 
